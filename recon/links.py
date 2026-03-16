@@ -17,8 +17,7 @@ from bs4 import BeautifulSoup
 # 웹 페이지의 html 문자열
 ##html = input("html: ")
 # 현재 페이지의 기준 url
-html_text = input("html:" )
-base_url = input("base_url: ")
+
 
 # 추출한 href 문자열에서 None, 빈 문자열 값은 제외
 def should_skip_href(href:str) -> bool:
@@ -84,4 +83,7 @@ def extract_links(html: str, base_url: str) -> list[str]:
     
     return results    
         
-print(extract_links(html_text, base_url))
+if __name__ == "__main__":
+    html_text = input("html:" )
+    base_url = input("base_url: ")
+    print(extract_links(html_text, base_url))
