@@ -19,9 +19,9 @@ from urllib.parse import urlparse
 
 import requests
 
-from forms import extract_forms
-from links import extract_links
-from params import extract_form_params, extract_query_params, merge_params
+from .forms import extract_forms
+from .links import extract_links
+from .params import extract_form_params, extract_query_params, merge_params
 
 
 def crawl_target(start_url: str, depth: int = 1) -> dict:
