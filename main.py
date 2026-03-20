@@ -19,6 +19,7 @@ def build_parser() -> argparse.ArgumentParser:
     crawl_parser = subparsers.add_parser("crawl", help="Crawl target URL")
     crawl_parser.add_argument("--url", required=True, help="Target URL")
     crawl_parser.add_argument("--depth", type=int, default=1, help="Crawl depth")
+    crawl_parser.add_argument("--submit-forms", action="store_true", help="Submit same-domain GET/POST forms")
     
     return parser
 
@@ -27,13 +28,14 @@ def main() -> None:
     args = parser.parse_args()
     
     if args.command == "crawl":
-        result = crawl_target(args.url, depth=args.depth)
+        result = crawl_target(args.url, depth=args.depth, submit_forms=args.submit_forms)
         output_path = save_result(result)
 
         print(f"[+] Crawl finished: {output_path}")
         print(f"Visited: {len(result.get('visited', []))}")
         print(f"Links: {len(result.get('links', []))}")
         print(f"Forms: {len(result.get('forms', []))}")
+        print(f"Submitted forms: {len(result.get('submitted_forms', []))}")
         print(f"Params: {len(result.get('params', []))}")
         print(f"Errors: {len(result.get('errors', []))}")
     else:

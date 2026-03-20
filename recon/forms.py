@@ -14,6 +14,9 @@
 from urllib.parse import urljoin
 from bs4 import BeautifulSoup
 
+
+from form_submit import submit_form
+
 '''
 1. form 내부 input 태그들을 순회
 2. name, type, value 추출
@@ -84,4 +87,10 @@ def extract_forms(html: str, base_url:str) -> list[dict]:
 if __name__ == "__main__":
     html = input("html: ")
     base_url = input("base_url: ")
-    print(extract_forms(html, base_url))
+    forms = extract_forms(html, base_url)
+    
+    print(f'type: {type(forms)}')
+
+    for form in forms:
+        print(submit_form(form))
+        print(f'type: {type(form )}')

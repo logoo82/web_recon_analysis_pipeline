@@ -22,14 +22,16 @@ import requests
 from .forms import extract_forms
 from .links import extract_links
 from .params import extract_form_params, extract_query_params, merge_params
+from .form_submit import submit_form
 
 
-def crawl_target(start_url: str, depth: int = 1) -> dict:
+def crawl_target(start_url: str, depth: int = 1, submit_forms: bool = False) -> dict:
     results = {
         "visited": [],
         "links": [],
         "forms": [],
         "params": [],
+        "submitted_forms": [],
         "errors": []
     }
     
@@ -82,6 +84,7 @@ def crawl_target(start_url: str, depth: int = 1) -> dict:
         
         for link in links:
             query_params.extend(extract_query_params(link))
+            
         form_params = extract_form_params(forms)
         # merged params 생성
         merged_params = merge_params(query_params, form_params)
@@ -105,6 +108,31 @@ def crawl_target(start_url: str, depth: int = 1) -> dict:
             if form_key not in seen_forms:
                 seen_forms.add(form_key)
                 results["forms"].append(form)
+            
+            if not submit_forms:
+                continue
+
+            parsed_action = urlparse(form["action"])
+            form_method = form.get("method", "GET").upper()
+            form_enctype = form.get("enctype", "").lower()
+
+            if parsed_action.netloc != start_domain:
+                continue
+            if form_method not in ("GET", "POST"):
+                continue
+            if form_enctype == "multipart/form-data":
+                continue
+
+            submit_result = submit_form(form)
+            results["submitted_forms"].append(submit_result)
+
+            final_url = submit_result.get("final_url")
+            if not final_url:
+                continue
+
+            parsed_final_url = urlparse(final_url)
+            if parsed_final_url.netloc == start_domain and final_url not in visited:
+                to_visit.append((final_url, current_depth + 1))
 
         for param in merged_params:
             param_key = (
