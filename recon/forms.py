@@ -15,7 +15,11 @@ from urllib.parse import urljoin
 from bs4 import BeautifulSoup
 
 
-from form_submit import submit_form
+try:
+    from .form_submit import submit_form
+except ImportError:
+    # Allow direct execution of this module for local testing.
+    from form_submit import submit_form
 
 '''
 1. form 내부 input 태그들을 순회
